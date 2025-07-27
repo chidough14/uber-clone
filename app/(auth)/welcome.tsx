@@ -1,15 +1,23 @@
 import { View, Text, TouchableOpacity, Image } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import Swiper from 'react-native-swiper'
 import { onboarding } from '@/constants'
 import CustomButton from '@/components/CustomButton'
+import { useAuth } from '@clerk/clerk-expo'
 
 export default function Onboarding() {
   const swiperRef = React.useRef<Swiper>(null)
   const [activeIndex, setActiveIndex] = React.useState(0)
   const isLastSlide = activeIndex === onboarding.length - 1;
+  const { isSignedIn, isLoaded } = useAuth();
+
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {``
+      router.replace('/home'); // 👈 use replace to skip welcome screen in back stack
+    }
+  }, [isSignedIn, isLoaded]);
 
   return (
     <SafeAreaView className='flex h-full items-center justify-between bg-white'>
@@ -45,7 +53,7 @@ export default function Onboarding() {
         ))}
       </Swiper>
 
-      <CustomButton  
+      <CustomButton
         title={isLastSlide ? "Get Started" : "Next"}
         onPress={() => {
           if (isLastSlide) {
@@ -54,7 +62,7 @@ export default function Onboarding() {
             swiperRef.current?.scrollBy(1);
           }
         }}
-        className="w-10/12 mt-10"
+        className="w-11/12 mt-10"
       />
     </SafeAreaView>
   )
