@@ -3,18 +3,57 @@ import Map from '@/components/Map'
 import RideCard from '@/components/RideCard'
 import { icons, images } from '@/constants'
 import { recentRides } from '@/lib/rides'
+import { useLocationStore } from '@/store'
 import { SignedIn, SignedOut, useUser } from '@clerk/clerk-expo'
-import { Link } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
+import { useEffect, useState } from 'react'
 import { FlatList, Text, View, Image, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import * as Location from 'expo-location'
+import GeoapifyAutocomplete from '@/components/GeoapifyAutoComplete'
 
 export default function Page() {
+  const { setUserLocation, setDestinationLocation } = useLocationStore()
   const { user } = useUser()
   const loading = false
+  const [hasPermissions, setHasPermissions] = useState(false)
+  const router = useRouter()
 
   const handleSignOut = () => { }
 
-  const handleDestinationPress = () => { }
+  const handleDestinationPress = (location: { latitude: number, longitude: number, address: string }) => {
+    setDestinationLocation(location)
+
+    router.push("/(root)/find-ride")
+  }
+
+  useEffect(() => {
+    const requestLocation = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync()
+
+      if (status !== "granted") {
+        setHasPermissions(false)
+        return
+      }
+
+      let location = await Location.getCurrentPositionAsync()
+
+      const address = await Location.reverseGeocodeAsync({
+        latitude: location.coords?.latitude!,
+        longitude: location.coords?.longitude!
+      })
+
+      setUserLocation({
+        latitude: location.coords?.latitude!,
+        longitude: location.coords?.longitude!,
+        // latitude: 37.78825,
+        // longitude: -122.4324,
+        address: `${address[0].name} ${address[0].region}`
+      })
+    }
+
+    requestLocation()
+  }, [])
 
   return (
     <SafeAreaView className='bg-general-500'>
@@ -65,10 +104,19 @@ export default function Page() {
             </View>
 
             {/* Google TextInput */}
-            <GoogleTextInput
+            {/* <GoogleTextInput
               icon={icons.search}
               containerStyle="bg-white shadow-md shadow-neutral-300"
               handlePress={handleDestinationPress}
+            /> */}
+
+            <GeoapifyAutocomplete
+              onSelect={({ latitude, longitude, address }: any) => {
+                handleDestinationPress({ latitude, longitude, address })
+                // setDestinationLocation({ latitude, longitude, address })
+              }}
+              showUserAddress={false}
+              icon={icons.search}
             />
 
             <>
