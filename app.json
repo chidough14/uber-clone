@@ -8,6 +8,7 @@
     "scheme": "uberclone",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+     "platforms": ["android", "ios"],
     "ios": {
       "supportsTablet": true
     },
@@ -16,7 +17,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.chidough14.uberclone"
     },
     "web": {
       "bundler": "metro",
@@ -42,6 +44,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": "https://uber.com/"
+      },
+      "eas": {
+        "projectId": "141c5ffe-c01d-43d4-9534-ff2f56a25f1a"
+      }
     }
   }
 }

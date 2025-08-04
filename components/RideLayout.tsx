@@ -1,10 +1,10 @@
-import { View, Text, TouchableOpacity, Image } from 'react-native'
-import React, { ReactNode, useRef } from 'react'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { useRouter } from 'expo-router'
 import { icons } from '@/constants'
-import Map from './Map'
-import BottomSheet, { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet'
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
+import { useRouter } from 'expo-router'
+import React, { ReactNode, useRef } from 'react'
+import { Image, Text, TouchableOpacity, View } from 'react-native'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import Map from './Map.native'
 
 export default function RideLayout({ title, children, snapPoints }: { title: string, children: ReactNode, snapPoints?: string[] }) {
   const router = useRouter()

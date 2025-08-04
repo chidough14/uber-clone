@@ -109,10 +109,10 @@ const BookRide = () => {
 
           <Payment
             fullName={user?.fullName!}
-            email={user?.emailAddresses[0].emailAddress}
-            amount={driverDetails?.price}
+            email={user?.emailAddresses[0]?.emailAddress ?? ""}
+            amount={driverDetails?.price ?? ""}
             driverId={driverDetails?.id}
-            rideTime={driverDetails?.time}
+            rideTime={driverDetails?.time ?? 0}
           />
         </>
       </RideLayout>

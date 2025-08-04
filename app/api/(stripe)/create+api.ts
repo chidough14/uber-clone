@@ -6,7 +6,6 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { name, email, amount } = body;
-    console.log("amount",amount)
 
     if (!name || !email || !amount) {
       return new Response(JSON.stringify({ error: "Missing fields", status: 400 }), {

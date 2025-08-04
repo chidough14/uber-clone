@@ -1,31 +1,41 @@
-import GoogleTextInput from '@/components/GoogleTextInput'
-import Map from '@/components/Map'
+import GeoapifyAutocomplete from '@/components/GeoapifyAutoComplete'
+import Map from '@/components/Map.native'
 import RideCard from '@/components/RideCard'
 import { icons, images } from '@/constants'
-import { recentRides } from '@/lib/rides'
-import { useLocationStore } from '@/store'
-import { SignedIn, SignedOut, useUser } from '@clerk/clerk-expo'
-import { Link, useRouter } from 'expo-router'
-import { useEffect, useState } from 'react'
-import { FlatList, Text, View, Image, ActivityIndicator, TouchableOpacity } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { useFetch } from '@/lib/fetch'
+import { useLocationStore, useRideStore } from '@/store'
+import { useAuth, useUser } from '@clerk/clerk-expo'
 import * as Location from 'expo-location'
-import GeoapifyAutocomplete from '@/components/GeoapifyAutoComplete'
+import { useRouter } from 'expo-router'
+import { useEffect, useState } from 'react'
+import { ActivityIndicator, FlatList, Image, Text, TouchableOpacity, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Page() {
   const { setUserLocation, setDestinationLocation } = useLocationStore()
+  const { rides, setRides } = useRideStore()
   const { user } = useUser()
-  const loading = false
   const [hasPermissions, setHasPermissions] = useState(false)
   const router = useRouter()
+  const { data: recentRides, loading } = useFetch(`/api/ride/${user?.id}`)
+  const { signOut } = useAuth()
 
-  const handleSignOut = () => { }
+  const handleSignOut = () => {
+    signOut()
+
+    router.replace('/sign-in')
+  }
 
   const handleDestinationPress = (location: { latitude: number, longitude: number, address: string }) => {
     setDestinationLocation(location)
 
     router.push("/(root)/find-ride")
   }
+
+  useEffect(() => {
+    setRides(recentRides)
+  }, [recentRides])
+
 
   useEffect(() => {
     const requestLocation = async () => {
@@ -58,7 +68,7 @@ export default function Page() {
   return (
     <SafeAreaView className='bg-general-500'>
       <FlatList
-        data={recentRides?.slice(0, 5)}
+        data={rides?.slice(0, 5)}
         renderItem={({ item }) => (
           <RideCard ride={item} />
         )}
